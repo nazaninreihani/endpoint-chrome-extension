@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "Binary endpoint",
+  "version": "1.0",
+  "description": "Change API Endpoint of Binary.com",
+  "author": "Nazanin Reihani Haghighi",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_icon": "icon.png",
+    "default_title": "Binary Endpoint",
+    "default_popup": "popup.html"
+  },
+  "permissions" : [
+    "declarativeContent", "storage",
+    "cookies", "*://*.binary.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://*.binary.com/*"],
+      "js": ["mywebpage.js"]
+    }
+  ]
+}
