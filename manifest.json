@@ -15,12 +15,12 @@
   },
   "permissions" : [
     "declarativeContent", "storage",
-    "cookies", "*://*.binary.com/*"
+    "cookies", "*://*.binary.com/*", "tabs"
   ],
   "content_scripts": [
     {
       "matches": ["*://*.binary.com/*"],
-      "js": ["mywebpage.js"]
+      "js": ["popup.js"]
     }
   ]
 }

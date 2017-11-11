@@ -1,52 +1,51 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Getting Started Extension's Popup</title>
-    <style type="text/css">
-        body {
-            margin: 10px;
-            white-space: nowrap;
-        }
+    <head>
+        <title>Getting Started Extension's Popup</title>
+        <style type="text/css">
+            body {
+                margin: 10px;
+                white-space: nowrap;
+            }
 
-        h1 {
-            font-size: 15px;
-        }
+            h1 {
+                font-size: 15px;
+            }
 
-        #container {
-            align-items: center;
-            display: flex;
-            justify-content: space-between;
-        }
-        .row {
-            width: 100%;
-        }
-    </style>
-    <script src="background.js"></script>
-</head>
+            #container {
+                align-items: center;
+                display: flex;
+                justify-content: space-between;
+            }
+            .row {
+                width: 100%;
+            }
+        </style>
+        <script src="background.js"></script>
+    </head>
 
-<body>
-<h1>Binary Endpoint</h1>
-<div id="container">
-    <div>
-        <h1>Change API Endpoint</h1>
-        <div class="row">
-            <div class="col">
-                Server: <input type="text" id="xx">
+    <body>
+    <h1>Binary Endpoint</h1>
+    <div id="container">
+        <div>
+            <h1>Change API Endpoint</h1>
+            <div class="row">
+                <div class="col">
+                    Server: <input type="text" id="server-url">
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                OAuth App ID:<input type="text">
+            <div class="row">
+                <div class="col">
+                    OAuth App ID:<input type="text" id="app-id">
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <button id="button">submit</button>
+            <div class="row">
+                <div class="col">
+                    <button id="button">submit</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-</body>
-<script src="form.js"></script>
-<script src="mywebpage.js"></script>
+    </body>
+    <script src="popup.js"></script>
 </html>
