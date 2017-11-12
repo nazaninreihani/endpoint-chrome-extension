@@ -18,25 +18,15 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    chrome.storage.sync.get(['app_id'], res => {
-        document.getElementById('app-id').value = res.app_id || 1098;
-    });
-  chrome.storage.sync.get(['server-url'], res => {
-    document.getElementById('server-url').value = res.server_url || 'blue.binaryws.com';
-  });
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area == "sync" && "app_id" in changes) {
+    console.log(changes.app_id.newValue);
+    appID = changes.app_id.newValue;
+    document.getElementById('app-id').value = changes.app_id.newValue;
+  } else if (area == "sync" && "server_url" in changes) {
+    document.getElementById('server-url').value = changes.server_url.newValue;
+  }
 });
-
-
-// chrome.storage.onChanged.addListener((changes, area) => {
-//   if (area == "sync" && "app_id" in changes) {
-//     console.log(changes.app_id.newValue);
-//     appID = changes.app_id.newValue;
-//     document.getElementById('app-id').value = changes.app_id.newValue;
-//   } else if (area == "sync" && "server_url" in changes) {
-//     document.getElementById('server-url').value = changes.server_url.newValue;
-//   }
-// });
 
 const select = element => document.querySelector(element);
 

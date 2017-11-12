@@ -23,55 +23,110 @@ async function executeOnTab(tabId, script) {
   return responseOfExecutedScript;
 };
 
+async function getConnectionSetup(url) {
+  const connectionSetup = await new Promise((resolve, reject) => {
+    const name = 'connection_setup';
+    const cookieInfo = {name, url};
+    chrome.cookies.get(cookieInfo, function (res) {
+      if (res) {
+        return resolve(res.value);
+      }
+    });
+  });
+  return connectionSetup;
+};
+
+async function getSocketUrl(connectionSetup, loginid, tabInfo) {
+  const appId = /staging\.binary\.com/i.test(tabInfo.url) ? 1098 : 1;
+  const toGreenPercent = { real: 100, virtual: 0, logged_out: 0 }; // default percentage
+  const categoryMap    = ['real', 'virtual', 'logged_out'];
+  const percentValues = connectionSetup;
+  if (percentValues && percentValues.indexOf(',') > 0) {
+    const cookie_percents = percentValues.split(',');
+    categoryMap.map((cat, idx) => {
+      if (cookie_percents[idx] && !isNaN(cookie_percents[idx])) {
+        toGreenPercent[cat] = +cookie_percents[idx].trim();
+      }
+    });
+  };
+
+  let server = 'blue';
+  let client_type = categoryMap[2];
+  if (loginid) {
+    client_type = /^VRT/.test(loginid) ? categoryMap[1] : categoryMap[0];
+  }
+  const randomPercent = Math.random() * 100;
+  if (randomPercent < toGreenPercent[client_type]) {
+    server = 'green';
+  }
+  const serverUrl = `${server}.binaryws.com`;
+  const socketUrl = `wss://${serverUrl}/websockets/v3`;
+  return {
+    serverUrl,
+    socketUrl,
+    appId
+  };
+};
+
+function setInStorage(key, value) {
+  chrome.storage.sync.set({ key: value });
+};
+
+async function submitNewValues(appId, serverUrl) {
+  const tabInfo = await getTabInfo();
+  const setAppIdScript = `localStorage.setItem("config.app_id", ${appId})`;
+  const setServerUrlScript = `localStorage.setItem("config.server_url", ${JSON.stringify(serverUrl)})`;
+  executeOnTab(tabInfo.id, setAppIdScript);
+  executeOnTab(tabInfo.id, setServerUrlScript);
+  chrome.tabs.update(tabInfo.id, {url: tabInfo.url});
+}
+
+async function reset() {
+  const tabInfo = await getTabInfo();
+  const loginidScript = 'localStorage.getItem("active_loginid")';
+  const connectionSetup = await getConnectionSetup(tabInfo.url);
+  const loginidArr = await executeOnTab(tabInfo.id, loginidScript);
+  const loginid = loginidArr[0];
+  const socketObj = await getSocketUrl(connectionSetup, loginid, tabInfo);
+  const setAppIdScript = `localStorage.setItem("config.app_id", ${socketObj.appId})`;
+  const setServerUrlScript = `localStorage.setItem("config.server_url", ${JSON.stringify(socketObj.serverUrl)})`;
+  select('#app-id').value = socketObj.appId;
+  select('#server-url').value = socketObj.serverUrl;
+  executeOnTab(tabInfo.id, setAppIdScript);
+  executeOnTab(tabInfo.id, setServerUrlScript);
+  chrome.tabs.update(tabInfo.id, {url: tabInfo.url});
+};
+
+async function init() {
+  const appIdScript = 'localStorage.getItem("config.app_id")';
+  const serverUrlScript = 'localStorage.getItem("config.server_url")';
+  const tabInfo = await getTabInfo();
+  const appId = await executeOnTab(tabInfo.id, appIdScript);
+  const serverUrl = await executeOnTab(tabInfo.id, serverUrlScript);
+  if (appId[0] != null && serverUrl[0] != null) {
+    select('#app-id').value = appId;
+    select('#server-url').value = serverUrl;
+    setInStorage('app_id', appId);
+    setInStorage('server_url', JSON.stringify(serverUrl));
+  } else {
+    reset();
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   try {
-    async function getAppId() {
-      const appIdScript = 'localStorage.getItem("config.app_id")';
-      const serverUrlScript = 'localStorage.getItem("config.server_url")';
-      const tabInfo = await getTabInfo();
-      const appId = await executeOnTab(tabInfo.id, appIdScript);
-      const serverUrl = await executeOnTab(tabInfo.id, serverUrlScript);
-      select('#app-id').value = appId;
-      select('#server-url').value = serverUrl;
-      console.log(serverUrl);
-    };
-    getAppId();
-
+    init();
+    select('#reset').addEventListener('click', () => {
+      reset();
+    });
+    select('#submit').addEventListener('click', () => {
+      const appId = select('#app-id').value;
+      const serverUrl = select('#server-url').value;
+      submitNewValues(appId, serverUrl);
+    });
   }
 
   catch(err) {
     console.log(err)
   }
-
 });
-
-
-
-
-
-// document.addEventListener('DOMContentLoaded', () => {
-//   try {
-//
-//   }
-//   catch(err) {
-//     // console.log(err);
-//   }
-// });
-//
-// document.addEventListener('DOMContentLoaded', () => {
-//   document.getElementById('button').addEventListener('click', () => {
-//     const appIdValue = document.getElementById("app-id").value;
-//     const serverURLValue = document.getElementById("server-url").value;
-//     chrome.tabs.query({
-//       active: true,
-//       currentWindow: true
-//     }, tabs => {
-//       const tab = tabs[0];
-//       chrome.tabs.executeScript(tab.id, { code: `localStorage.setItem("config.app_id", ${appIdValue} )` });
-//       chrome.tabs.executeScript(tab.id, { code: `localStorage.setItem("config.server_url", ${JSON.stringify(serverURLValue)} )` });
-//       chrome.tabs.update(tabs[0].id, {url: tabs[0].url});
-//     });
-//   });
-// });
-//
-//
