@@ -2,51 +2,49 @@
 <html>
     <head>
         <title>Getting Started Extension's Popup</title>
-        <style type="text/css">
-            body {
-                margin: 10px;
-                white-space: nowrap;
-            }
-
-            h1 {
-                font-size: 15px;
-            }
-
-            #container {
-                align-items: center;
-                display: flex;
-                justify-content: space-between;
-            }
-            .row {
-                width: 100%;
-            }
-        </style>
+        <link rel="stylesheet" href="styles.css" />
         <script src="background.js"></script>
     </head>
 
     <body>
-    <h1>Binary Endpoint</h1>
+    <div class="header">
+        <h1>Binary Endpoint</h1>
+    </div>
     <div id="container">
-        <div>
+        <div class="content">
             <h1>Change API Endpoint</h1>
             <div class="row">
                 <div class="col">
-                    Server: <input type="text" id="server-url">
+                    <label for="server-url">Server</label>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <input type="text" id="server-url" class="text-input">
+                    </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    OAuth App ID:<input type="text" id="app-id">
+                    <label for="app-id">
+                        OAuth App ID
+                    </label>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <button id="submit">submit</button>
+                    <input type="text" id="app-id" class="text-input">
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <button id="reset">reset</button>
+            <div class="row buttons">
+                <div>
+                    <button id="submit" class="submit-button"><span>Submit</span></button>
+                </div>
+                <div>
+                    <button id="reset" class="reset-button">
+                        <span>
+                            Reset To Original Settings
+                        </span>
+                    </button>
                 </div>
             </div>
         </div>
