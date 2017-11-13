@@ -11,7 +11,6 @@ async function getTabInfo() {
   return tab;
 };
 
-
 async function executeOnTab(tabId, script) {
   const responseOfExecutedScript = await new Promise((resolve, reject) => {
     chrome.tabs.executeScript(tabId, { code: script }, (res) => {
@@ -81,19 +80,24 @@ async function submitNewValues(appId, serverUrl) {
   chrome.tabs.update(tabInfo.id, {url: tabInfo.url});
 }
 
-async function reset() {
+async function calculateDefault() {
   const tabInfo = await getTabInfo();
   const loginidScript = 'localStorage.getItem("active_loginid")';
   const connectionSetup = await getConnectionSetup(tabInfo.url);
   const loginidArr = await executeOnTab(tabInfo.id, loginidScript);
   const loginid = loginidArr[0];
   const socketObj = await getSocketUrl(connectionSetup, loginid, tabInfo);
-  const setAppIdScript = `localStorage.setItem("config.app_id", ${socketObj.appId})`;
-  const setServerUrlScript = `localStorage.setItem("config.server_url", ${JSON.stringify(socketObj.serverUrl)})`;
+  const setAppIdScript = `localStorage.removeItem("config.app_id")`;
+  const setServerUrlScript = `localStorage.removeItem("config.server_url")`;
   select('#app-id').value = socketObj.appId;
   select('#server-url').value = socketObj.serverUrl;
   executeOnTab(tabInfo.id, setAppIdScript);
   executeOnTab(tabInfo.id, setServerUrlScript);
+  return tabInfo;
+}
+
+async function reset() {
+  const tabInfo = await calculateDefault();
   chrome.tabs.update(tabInfo.id, {url: tabInfo.url});
 };
 
@@ -109,7 +113,7 @@ async function init() {
     setInStorage('app_id', appId);
     setInStorage('server_url', JSON.stringify(serverUrl));
   } else {
-    reset();
+    calculateDefault();
   }
 };
 
