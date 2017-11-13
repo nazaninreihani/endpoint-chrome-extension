@@ -9,6 +9,9 @@ chrome.runtime.onInstalled.addListener(() => {
         conditions: [
           new chrome.declarativeContent.PageStateMatcher({
             pageUrl: { urlContains: '.binary.com' },
+          }),
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: { urlContains: '.github.io/binary-static/' },
           })
         ],
         // And shows the extension's page action.

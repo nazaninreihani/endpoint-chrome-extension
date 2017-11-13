@@ -27,8 +27,12 @@ async function getConnectionSetup(url) {
     const name = 'connection_setup';
     const cookieInfo = {name, url};
     chrome.cookies.get(cookieInfo, function (res) {
-      if (res) {
+      if (res != null) {
         return resolve(res.value);
+      } else if (res == null) {
+        return resolve(res);
+      } else {
+        return reject(res);
       }
     });
   });
@@ -39,7 +43,7 @@ async function getSocketUrl(connectionSetup, loginid, tabInfo) {
   const appId = /staging\.binary\.com/i.test(tabInfo.url) ? 1098 : 1;
   const toGreenPercent = { real: 100, virtual: 0, logged_out: 0 }; // default percentage
   const categoryMap    = ['real', 'virtual', 'logged_out'];
-  const percentValues = connectionSetup;
+  const percentValues = connectionSetup || null;
   if (percentValues && percentValues.indexOf(',') > 0) {
     const cookie_percents = percentValues.split(',');
     categoryMap.map((cat, idx) => {
@@ -50,13 +54,15 @@ async function getSocketUrl(connectionSetup, loginid, tabInfo) {
   };
 
   let server = 'blue';
-  let client_type = categoryMap[2];
-  if (loginid) {
-    client_type = /^VRT/.test(loginid) ? categoryMap[1] : categoryMap[0];
-  }
-  const randomPercent = Math.random() * 100;
-  if (randomPercent < toGreenPercent[client_type]) {
-    server = 'green';
+  if (!/staging\.binary\.com/i.test(tabInfo.url)) {
+    let client_type = categoryMap[2];
+    if (loginid) {
+      client_type = /^VRT/.test(loginid) ? categoryMap[1] : categoryMap[0];
+    }
+    const randomPercent = Math.random() * 100;
+    if (randomPercent < toGreenPercent[client_type]) {
+      server = 'green';
+    }
   }
   const serverUrl = `${server}.binaryws.com`;
   const socketUrl = `wss://${serverUrl}/websockets/v3`;
@@ -84,6 +90,7 @@ async function calculateDefault() {
   const tabInfo = await getTabInfo();
   const loginidScript = 'localStorage.getItem("active_loginid")';
   const connectionSetup = await getConnectionSetup(tabInfo.url);
+
   const loginidArr = await executeOnTab(tabInfo.id, loginidScript);
   const loginid = loginidArr[0];
   const socketObj = await getSocketUrl(connectionSetup, loginid, tabInfo);

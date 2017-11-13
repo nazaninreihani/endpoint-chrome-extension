@@ -15,11 +15,11 @@
   },
   "permissions" : [
     "declarativeContent", "storage",
-    "cookies", "*://*.binary.com/*", "tabs"
+    "cookies", "*://*.binary.com/*", "*://*.github.io/binary-static/*", "tabs"
   ],
   "content_scripts": [
     {
-      "matches": ["*://*.binary.com/*"],
+      "matches": ["*://*.binary.com/*", "*://*.github.io/binary-static/*"],
       "js": ["popup.js"]
     }
   ]
