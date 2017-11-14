@@ -41,29 +41,29 @@ async function getConnectionSetup(url) {
 
 async function getSocketUrl(connectionSetup, loginid, tabInfo) {
   const appId = /staging\.binary\.com/i.test(tabInfo.url) ? 1098 : 1;
-  const toGreenPercent = { real: 100, virtual: 0, logged_out: 0 }; // default percentage
-  const categoryMap    = ['real', 'virtual', 'logged_out'];
-  const percentValues = connectionSetup || null;
-  if (percentValues && percentValues.indexOf(',') > 0) {
-    const cookie_percents = percentValues.split(',');
-    categoryMap.map((cat, idx) => {
-      if (cookie_percents[idx] && !isNaN(cookie_percents[idx])) {
-        toGreenPercent[cat] = +cookie_percents[idx].trim();
-      }
-    });
-  };
+  // const toGreenPercent = { real: 100, virtual: 0, logged_out: 0 }; // default percentage
+  // const categoryMap    = ['real', 'virtual', 'logged_out'];
+  // const percentValues = connectionSetup || null;
+  // if (percentValues && percentValues.indexOf(',') > 0) {
+  //   const cookie_percents = percentValues.split(',');
+  //   categoryMap.map((cat, idx) => {
+  //     if (cookie_percents[idx] && !isNaN(cookie_percents[idx])) {
+  //       toGreenPercent[cat] = +cookie_percents[idx].trim();
+  //     }
+  //   });
+  // };
 
-  let server = 'blue';
-  if (!/staging\.binary\.com/i.test(tabInfo.url)) {
-    let client_type = categoryMap[2];
-    if (loginid) {
-      client_type = /^VRT/.test(loginid) ? categoryMap[1] : categoryMap[0];
-    }
-    const randomPercent = Math.random() * 100;
-    if (randomPercent < toGreenPercent[client_type]) {
-      server = 'green';
-    }
-  }
+  let server = 'frontend';
+  // if (!/staging\.binary\.com/i.test(tabInfo.url)) {
+  //   let client_type = categoryMap[2];
+  //   if (loginid) {
+  //     client_type = /^VRT/.test(loginid) ? categoryMap[1] : categoryMap[0];
+  //   }
+  //   const randomPercent = Math.random() * 100;
+  //   if (randomPercent < toGreenPercent[client_type]) {
+  //     server = 'green';
+  //   }
+  // }
   const serverUrl = `${server}.binaryws.com`;
   const socketUrl = `wss://${serverUrl}/websockets/v3`;
   return {
