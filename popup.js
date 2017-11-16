@@ -14,8 +14,10 @@ async function getTabInfo() {
 async function executeOnTab(tabId, script) {
   const responseOfExecutedScript = await new Promise((resolve, reject) => {
     chrome.tabs.executeScript(tabId, { code: script }, (res) => {
-      if (res) {
+      if (res || res == null) {
         return resolve(res);
+      } else {
+        reject(res);
       }
     });
   });
@@ -39,7 +41,11 @@ const getDefaultAppId = (tabInfo) => {
 }
 
 async function getSocketUrl(tabInfo) {
-  const appId = getDefaultAppId(tabInfo);
+  const getDefAppIdScript = 'localStorage.getItem("config.default_app_id")';
+  let appId = await executeOnTab(tabInfo.id, getDefAppIdScript);
+  if (appId) {
+    appId = getDefaultAppId(tabInfo);
+  }
   let server = 'frontend';
   const serverUrl = `${server}.binaryws.com`;
   const socketUrl = `wss://${serverUrl}/websockets/v3`;

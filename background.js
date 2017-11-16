@@ -8,11 +8,11 @@ chrome.runtime.onInstalled.addListener(() => {
         // That fires when a page's URL contains a '.binary.com' ...
         conditions: [
           new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: { urlContains: '.binary.com' },
+            pageUrl: { urlMatches: '(staging|www|app|ticktrade|developers|webtrader)\.binary.com' },
           }),
           new chrome.declarativeContent.PageStateMatcher({
             pageUrl: { urlContains: '.github.io/binary-static/' },
-          })
+          }),
         ],
         // And shows the extension's page action.
         actions: [ new chrome.declarativeContent.ShowPageAction() ]
