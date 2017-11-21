@@ -42,10 +42,11 @@ const getDefaultAppId = (tabInfo) => {
 
 async function getSocketUrl(tabInfo) {
   const getDefAppIdScript = 'localStorage.getItem("config.default_app_id")';
-  let appId = await executeOnTab(tabInfo.id, getDefAppIdScript);
-  if (appId) {
-    appId = getDefaultAppId(tabInfo);
+  let defaultAppId = await executeOnTab(tabInfo.id, getDefAppIdScript);
+  if (!defaultAppId[0]) {
+    defaultAppId = getDefaultAppId(tabInfo);
   }
+  const appId = defaultAppId;
   let server = 'frontend';
   const serverUrl = `${server}.binaryws.com`;
   const socketUrl = `wss://${serverUrl}/websockets/v3`;
