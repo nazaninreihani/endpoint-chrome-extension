@@ -19,7 +19,7 @@
   },
   "permissions" : [
     "declarativeContent", "storage",
-    "cookies", "*://*.binary.com/*", "*://*.github.io/binary-static/*", "tabs"
+    "*://*.binary.com/*", "*://*.github.io/binary-static/*", "tabs"
   ],
   "content_scripts": [
     {
