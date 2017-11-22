@@ -1,7 +1,7 @@
 "use strict";
-async function getTabInfo() {
+function getTabInfo() {
   const queryInfo = { active: true, currentWindow: true };
-  const tab = await new Promise((resolve, reject) => {
+  const tab = new Promise((resolve, reject) => {
     chrome.tabs.query(queryInfo, (tabs) => {
       if (tabs) {
         return resolve(tabs[0]);
@@ -11,8 +11,8 @@ async function getTabInfo() {
   return tab;
 };
 
-async function executeOnTab(tabId, script) {
-  const responseOfExecutedScript = await new Promise((resolve, reject) => {
+function executeOnTab(tabId, script) {
+  const responseOfExecutedScript = new Promise((resolve, reject) => {
     chrome.tabs.executeScript(tabId, { code: script }, (res) => {
       if (res || res == null) {
         return resolve(res);
