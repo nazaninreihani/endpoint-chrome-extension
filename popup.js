@@ -57,10 +57,6 @@ async function getSocketUrl(tabInfo) {
   };
 };
 
-function setInStorage(key, value) {
-  chrome.storage.sync.set({ key: value });
-};
-
 async function submitNewValues(appId, serverUrl) {
   const tabInfo = await getTabInfo();
   const setAppIdScript = `localStorage.setItem("config.app_id", ${appId})`;
@@ -96,8 +92,6 @@ async function init() {
   if (appId[0] != null && serverUrl[0] != null) {
     select('#app-id').value = appId;
     select('#server-url').value = serverUrl;
-    setInStorage('app_id', appId);
-    setInStorage('server_url', JSON.stringify(serverUrl));
   } else {
     calculateDefault();
   }
